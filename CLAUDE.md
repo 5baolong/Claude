@@ -38,6 +38,23 @@
 - 同一段代码、**同一未释放的请求**内反复微调：直接改现有块里的「新逻辑代码」，**不要**反复叠加新的注释块。
 - **请求已释放后**再次修改（或修改的是另一段代码）：才新增一个 `===== Changed by WBL <日期> =====*` 块。
 
+## ABAP 新语法优先规则
+
+写 ABAP 代码时，**能用新语法就用新语法**（ABAP 7.40+），避免老式的显式声明：
+
+- **内联声明**：`SELECT ... INTO TABLE @DATA(lt_tab)` 直接用，不要先 `DATA: lt_tab TYPE TABLE OF ...` 定义。
+- **构造/内表表达式**：优先 `VALUE #( )`、`CORRESPONDING #( )`、`COND #( )`、`table[ key ]`、`FOR`。
+- **只在需要时才显式声明**：变量要复用、类型要特殊指定、或跨作用域可见时才 `DATA:` 显式定义。
+
+```abap
+"推荐：内联声明，不用定义内表
+SELECT saknr, txt50 FROM skat INTO TABLE @DATA(lt_skat) WHERE ...
+
+"不推荐：先显式定义内表
+DATA: lt_skat TYPE TABLE OF skat.
+SELECT saknr, txt50 FROM skat INTO CORRESPONDING FIELDS OF TABLE @lt_skat WHERE ...
+```
+
 ## Claude Code 行为规则（ABAP 适配版）
 
 > 来源：网上流传的 Karpathy 4 条 → 12 条社区规则，精选其中贴合 ABAP 开发的 8 条，与上面权限/格式规则配合使用。
